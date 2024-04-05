@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Memória</title>
+   <style>
+    body {
+        background: linear-gradient(to bottom, red, black, red, black); /* Define um degradê vertical do laranja para o roxo */
+    }
+    h1 {
+        font-size: 40px;
+        font-family: 'Courier New', Courier, monospace;
+        background-image: linear-gradient(black, black, BLACK);
+        background-clip: text;
+        -webkit-background-clip: text; 
+        -webkit-text-fill-color: transparent;
+        font-weight: bold;
+        line-height: 1.1;
+    }
+    table {
+        border: 10px solid transparent;
+        border-image: linear-gradient(to right, black, red, black, red);
+        border-image-slice: 1; 
+    }
+    #msg {
+        font-size: 50px;
+        color: whitesmoke;
+    }
+    </style>
+</head>
+<body>
+    <h1>Jogo da Memória - Artes Marciais</h1>
+    <div id="msg"></div>
+    <table>
+        <tr>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(0,0)" id="i00"></td>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(0,1)" id="i01"></td>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(0,2)" id="i02"></td>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(0,3)" id="i03"></td>
+        </tr>
+        <tr>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(1,0)" id="i10"></td>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(1,1)" id="i11"></td>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(1,2)" id="i12"></td>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(1,3)" id="i13"></td>
+        </tr>
+        <tr>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(2,0)" id="i20"></td>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(2,1)" id="i21"></td>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(2,2)" id="i22"></td>
+            <td><img src="img7.png" width="300px" height="250px" onclick="trocar(2,3)" id="i23"></td>
+        </tr>
+    </table>
+
+<script>
+let gabarito1 = [["img1.png", "img2.png", "img5.png", "img6.jpg"],
+                 ["img5.png", "img3.png", "img1.png", "img4.png"],
+                 ["img6.jpg", "img2.png", "img3.png", "img4.png"]];
+
+let gabarito = sortear(gabarito1);
+
+let jogador1 = 0;
+let jogador2 = 0;
+let clicks = 0;
+let jogada = 0;
+let linha; // coordenada do primeiro clique
+let coluna;
+
+function trocar(lin, col)
+ {
+    let imagem = document.getElementById("i" + lin + col).src;
+    imagem = imagem.split("/");
+    if (imagem[imagem.length - 1] === "img7.png") 
+    {
+        document.getElementById("i" + lin + col).src = gabarito[lin][col];
+        clicks++;
+        if (clicks === 1) 
+        {
+            linha = lin; // está guardando as coordenadas da primeira vez que clicou / pegando a primeira imagem
+            coluna = col;
+        }
+        if (clicks === 2) 
+        {
+            jogada++;
+            clicks = 0; // está voltando para 0 para o próximo jogador poder clicar
+            if (gabarito[linha][coluna] === gabarito[lin][col]) 
+            { // se gabarito linha e coluna for igual a lin e col ele acertou a carta
+                // acertou
+                // verificar se jogada é par ou ímpar
+                if (jogada % 2 !== 0) 
+                {
+                    jogador1++;
+                } else 
+                {
+                    jogador2++;
+                }
+                // contar pontos para o jogador
+                if (jogador1 + jogador2 === 6)
+                 {
+                    // o jogo acabou e devemos dizer quem ganhou
+                    if (jogador1 > jogador2) 
+                    {
+                        document.getElementById("msg").innerHTML = "Jogador 1 Venceu!!!";
+                    } else if (jogador2 > jogador1) 
+                    {
+                        document.getElementById("msg").innerHTML = "Jogador 2 venceu, Parabéns!!!";
+                    } else 
+                    {
+                        document.getElementById("msg").innerHTML = "Jogo terminou empatado";
+                    }
+                }
+            } else {
+                // desvirar as cartas depois de determinado tempo
+                setTimeout(function() 
+                { // set timeout conta os segundos para as cartas ficarem viradas, e se errou, volta a ficar escondidas
+                    document.getElementById("i" + linha + coluna).src = "img7.png";
+                    document.getElementById("i" + lin + col).src = "img7.png";
+                }, 1500);
+            }
+        }
+    }
+}
+
+function sortear(gabarito1) 
+{
+    for (let i = 0; i < gabarito1.length; i++) 
+    {
+        for (let z = 0; z < gabarito1[i].length; z++)
+         {
+            let linha = Math.floor(Math.random() * gabarito1.length);
+            let coluna = Math.floor(Math.random() * gabarito1[i].length);
+
+            var aux = gabarito1[i][z];
+            gabarito1[i][z] = gabarito1[linha][coluna];
+            gabarito1[linha][coluna] = aux;
+        } // for interno
+    } // for externo -> o primeiro for 
+    return gabarito1;
+}// fim da função sortear
+    </script>
+</body>
+</html>
